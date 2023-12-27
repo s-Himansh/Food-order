@@ -3,6 +3,7 @@ const app = express()
 const port = 5000
 const connection = require('./db');
 const createUser = require('./Routes/CreateUser');
+const displayData = require('./Routes/DisplayData');
 
 connection();
 
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use('/api', createUser);
+app.use('/api', displayData);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

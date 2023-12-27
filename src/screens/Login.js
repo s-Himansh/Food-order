@@ -16,6 +16,8 @@ export default function Login() {
       alert('Please enter valid values in the field');
     }
     else{
+      localStorage.setItem("authToken", json.authtoken);
+      console.log(json.authtoken);
       navigate('/');
     }
   }

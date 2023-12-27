@@ -2,7 +2,9 @@ const express = require('express');
 const Router = express.Router();
 const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const secret = "myfavsportisbasketball";
 
 Router.post('/createuser', [body('email', 'Incorrect Email').isEmail(), body('password', 'Incorrect Password').isLength({ min: 5 }), body('name').isLength({ min: 3 })], async (req, res) => {
 
@@ -11,12 +13,15 @@ Router.post('/createuser', [body('email', 'Incorrect Email').isEmail(), body('pa
         return res.status(400).json({ errors: errors.array() });
     }
 
+    // for encrypting the password
+    const salt = await bcrypt.genSalt(10);
+    const securePass = await bcrypt.hash(req.body.password, salt);
     try {
         await User.create({
             name: req.body.name,
             location: req.body.location,
             email: req.body.email,
-            password: req.body.password
+            password: securePass
         })
         res.json({ success: true })
     } catch (error) {
@@ -37,12 +42,17 @@ Router.post('/loginuser', [body('email', 'Incorrect Email').isEmail(), body('pas
         if (!userData) {
             return res.status(400).json({ errors: "Incorrect credentials. Please try again" });
         }
-
-        if (req.body.password !== userData.password) {
+        
+        const passCmp = await bcrypt.compare(req.body.password, userData.password);
+        
+        if (!passCmp) {
             return res.status(400).json({ errors: "Incorrect credentials. Please try again" });
         }
 
-        res.json({ success: true });
+        const data = { user : {_id : userData._id} };
+        const authtoken = jwt.sign(data, secret);
+
+        return res.json({ success: true, authtoken : authtoken });
     } catch (error) {
         console.log(error.message);
         res.json({ success: false });
