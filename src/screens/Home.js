@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import Footer from '../components/Footer'
 import Card from '../components/Card'
-import Carousel from '../components/Carousel'
 
 export default function Home() {
 
@@ -72,7 +71,7 @@ export default function Home() {
                                  ? foodItem.filter((item) => item.CategoryName === data.CategoryName && (item.name.toLowerCase().includes(search.toLocaleLowerCase()))).map((filteredName) => {
                                     return (
                                        <div key={filteredName._id} className='col-12 col-md-6 col-lg-3'>
-                                          <Card foodName={filteredName.name} options={filteredName.options[0]} imgsrc={filteredName.img} description={filteredName.description} />
+                                          <Card foodItem = {filteredName} options={filteredName.options[0]} />
                                        </div>
                                     )
                                  }) : <div>No data found</div>

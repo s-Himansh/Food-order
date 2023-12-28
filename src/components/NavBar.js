@@ -1,9 +1,18 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import Badge from 'react-bootstrap/Badge'
 
 export default function NavBar() {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("authToken");
+        navigate("/login");
+    }
+
     return (
-    
+
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-success">
                 <div className="container-fluid">
@@ -12,17 +21,33 @@ export default function NavBar() {
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav">
+                        <ul className="navbar-nav me-auto mb-2">
                             <li className="nav-item">
-                                <Link className="nav-link" aria-current="page" to="/">Home</Link>
+                                <Link className="nav-link active fs-5" aria-current="page" to="/">Home</Link>
                             </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to="/login">Login</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to="/signup">SignUp</Link>
-                            </li>
+                            {
+                                localStorage.getItem("authToken") ?
+                                    <li className='nav-item'>
+                                        <Link className='nav-link active fs-5' aria-current='page' to='/'>My Orders</Link>
+                                    </li>
+                                    : ""
+                            }
                         </ul>
+                        <div>
+                            {
+                                !localStorage.getItem("authToken") ?
+                                    <div className='d-flex'>
+                                        <Link className="btn bg-white text-success mx-1" to="/login">Login</Link>
+                                        <Link className="btn bg-white text-success mx-1" to="/signup">SignUp</Link>
+                                    </div>
+                                    : 
+                                    <div>
+                                        <Link to='/mycart' className='btn bg-white text-success mx-2'style={{ fontWeight: 'bold' }} >My Cart{" "} <Badge pill bg="black">3</Badge></Link>
+                                        <div className='btn bg-white text-danger mx-2'  style={{ fontWeight: 'bold' }} onClick={handleLogout}>Logout</div>
+                                    </div>
+                                    
+                            }
+                        </div>
                     </div>
                 </div>
             </nav>
